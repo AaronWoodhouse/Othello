@@ -1,6 +1,5 @@
 // Othello
 // 03/15/2020
-// Aaron Woodhouse 100699990
 
 package sample;
 

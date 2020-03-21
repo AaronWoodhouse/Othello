@@ -1,6 +1,5 @@
 // Othello
 // 03/15/2020
-// Aaron Woodhouse 100699990
 
 package sample;
 
@@ -25,8 +24,9 @@ public class Board {
     //array of pieces
     ArrayList<ArrayList<Piece>> pieces = new ArrayList<>(8);
 
-    public void start(GridPane pane) {
+    public void start(GridPane pane) {  // sets up the board
 
+        // starting 4 pieces
         placement(pane, 3, 3);
         placement(pane, 3, 4);
         placement(pane, 4, 4);
@@ -36,8 +36,8 @@ public class Board {
 
     }
 
-    public Board(GridPane pane) {
-        // fill
+    public Board(GridPane pane) {       // creates the board
+        // fill board with invisible pieces
         for (int i = 0; i < 8; i++) {
             pieces.add(new ArrayList<>());  // fills with arrays
             for (int j = 0; j < 8; j++) {
@@ -67,21 +67,22 @@ public class Board {
     public void placement(GridPane pane, int cI, int rI) {
 
         if (started) {
+            // checks if selected placement is a legal move
             if (isIllegal(cI, rI) == 0) {
 
                 //toggling
                 for (int i = cI - 1; i < cI + 2; i++) {     // cells around placed piece
                     for (int j = rI - 1; j < rI + 2; j++) {
-                        int diffX = i - cI;                 // unit vector direction
+                        int diffX = i - cI;                 // gets unit vector direction
                         int diffY = j - rI;
 
-                        // toggle all in a line in a direction
+                        // toggle all in a line for a direction
                         int c = 1;
                         for (int i2 = 1; i2 < 8; i2++) {
-                            int dx = cI + (diffX * i2);    // all in a line
+                            int dx = cI + (diffX * i2);
                             int dy = rI + (diffY * i2);
 
-                            if (dx > 7 || dx < 0 || dy > 7 || dy < 0)  {    // stops NPE
+                            if (dx > 7 || dx < 0 || dy > 7 || dy < 0)  {    // checks if the piece is within the board
                                 c = 1;
                                 break;
                             }
@@ -103,9 +104,12 @@ public class Board {
                         }
                     }
                 }
+
+                // place piece on selected spot
                 pieces.get(cI).get(rI).place(player);
                 pane.add(pieces.get(cI).get(rI).getCircle(), cI, rI);
 
+                // swap player
                 if (player == 0)      { player = 1; }
                 else if (player == 1) { player = 0; }
 
@@ -114,6 +118,7 @@ public class Board {
             }
 
         } else if (!started) {
+            // part of the board setup
             pieces.get(cI).get(rI).place(player);
             pane.add(pieces.get(cI).get(rI).getCircle(), cI, rI);
 
@@ -126,15 +131,18 @@ public class Board {
 
     public void showLegal(GridPane pane) {
 
-        int moves = 0;
+        int moves = 0;  // determines number of available moves
 
+        // clear possible moves
         possibleMoves.forEach((n) -> pane.getChildren().remove(n));
         possibleMoves.clear();
 
+        // determine legal moves
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
 
                 if(isIllegal(i, j) == 0) {
+                    // make red circle to indicate valid move
                     moves++;
                     Circle circle = new Circle(20, 20, 25);
                     circle.setFill(Color.RED);
@@ -145,12 +153,13 @@ public class Board {
         }
         if (moves == 0) {
 
+            // if no moves are available, reswap the players
             if (player == 0)      { player = 1; }
             else if (player == 1) { player = 0; }
 
             gameOverCounter++;
 
-            //end game if no moves left 2 times in a row
+            // end game if no moves left, 2 times in a row
             if (gameOverCounter == 2) {
                 System.out.println();
                 System.out.println();
@@ -180,21 +189,22 @@ public class Board {
         // check surroundings for any of opposite color
         for (int i = cI - 1; i < cI + 2; i++) {
             for (int j = rI - 1; j < rI + 2; j++) {
-                if (i <= 7 && i >= 0 && j <= 7 && j >= 0 ) {    // stops NPEs
+                if (i <= 7 && i >= 0 && j <= 7 && j >= 0 ) {    // checks if within bounds
                     if (pieces.get(i).get(j).isPlaced && pieces.get(i).get(j).isWhite != player) {
-                        int diffX = i - cI;
+                        int diffX = i - cI; // unit vector directions
                         int diffY = j - rI;
 
                         // check all in a line in that direction
                         for (int x = 2; x < 8; x++) {
                             int dx = cI + (diffX * x);
                             int dy = rI + (diffY * x);
-                            if (dx > 7 || dx < 0 || dy > 7 || dy < 0) {
+                            if (dx > 7 || dx < 0 || dy > 7 || dy < 0) { // within bounds?
                                 x = 8;
-                            } else if (!pieces.get(dx).get(dy).isPlaced) {
+                            } else if (!pieces.get(dx).get(dy).isPlaced) {  // not placed?
                                 x = 8;
-                            } else if (pieces.get(dx).get(dy).isPlaced && pieces.get(dx).get(dy).isWhite == player) {
+                            } else if (pieces.get(dx).get(dy).isPlaced && pieces.get(dx).get(dy).isWhite == player) { // placed and same as player
                                 return 0;
+                                // legal move
                             }
                         }
 
@@ -203,6 +213,7 @@ public class Board {
             }
         }
         return 1;
+        // illegal move
     }
 
     public void countScore() {
@@ -214,6 +225,7 @@ public class Board {
                 else if (pieces.get(i).get(j).isPlaced && pieces.get(i).get(j).isWhite == 0) { scoreB++; }
             }
         }
+        System.out.println();
         System.out.println("B:" + scoreB);
         System.out.println("W:" + scoreW);
         System.out.println();
